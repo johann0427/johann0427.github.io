@@ -3,7 +3,7 @@ function FindProxyForURL(url, host) {
     // Japan
 	
     if (shExpMatch(url, "*.mgstage.*/*")) { 
-        return 'PROXY 159.89.82.38:8080';
+        return 'SOCKS 198.50.214.17:6874';
     } 
 		
 	if (shExpMatch(url, "https://abema.tv/")) { 
