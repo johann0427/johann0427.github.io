@@ -1,1 +1,1 @@
-# Proxy-Auto-Configuration-PAC-
+# Proxy Auto-Configuration (PAC) file
