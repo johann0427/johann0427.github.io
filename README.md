@@ -1,1 +1,1 @@
-# Proxy Auto-Configuration (PAC) file
+# custom filter
