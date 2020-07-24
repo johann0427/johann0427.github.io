@@ -1,0 +1,41 @@
+! jav-site-popads
+
+/scripting/
+/scripts-in-2020/
+/scripts/in/2020/
+/scripts-nvm/gen.php
+/scripts-php/gen.php
+/scripts-jsp/gen.php
+/ads/pop.js
+--&refer=
+--floater?
+--click?
+
+
+! frequently visited sites
+	
+hpjav.tv##.home-featured-ad
+hpjav.tv##.video-boxad, .mn-related-container
+hpjav.tv##.poplayer
+hpjav.tv##iframe[src*="exosrv"]
+
+popjav.tv##.hotadsholder
+popjav.tv##.poplayer
+popjav.tv##iframe[src*="exosrv"]
+
+hanime.tv##div:nth-of-type(1) > .mb-5.htv-carousel-container.lazy
+hanime.tv##.htvad.mobile, .inter
+
+nhentai.net##.advt
+m.gamer.com.tw##.download-app_box01
+
+
+! mfkhm.com
+
+s9.cnzz.com
+hm.baidu.com
+zz.bdstatic.com
+vpn.szdatayj.com
+new.xiongzhangad.com
+yanxuan.nosdn.127.net
+www.68710266.com
