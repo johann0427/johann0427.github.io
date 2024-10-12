@@ -1,41 +1,14 @@
-! jav-site-popads
+[ABP for Mobile Browsers]
+! Version: 20241012
+! Title: ABP Mobile Custom List
+! Last modified: 12 Oct 2024 03:30 UTC
+! *** easylist:template_header.txt ***
+! 
+! -----------------------General advert blocking filters-----------------------!
 
-/scripting/
-/scripts-in-2020/
-/scripts/in/2020/
-/scripts-nvm/gen.php
-/scripts-php/gen.php
-/scripts-jsp/gen.php
-/ads/pop.js
---&refer=
---floater?
---click?
+/^https?:\/\/(?:[a-z]{2}\.)?[0-9a-z]{5,16}\.[a-z]{3,7}\/[a-z](?=[a-z]{0,25}[0-9A-Z])[0-9a-zA-Z]{3,26}\/\d{4,6}(?:\?[_v]=\d+)?$/$script,third-party
 
+! -----------------------Site Only-----------------------!
 
-! frequently visited sites
-	
-hpjav.tv##.home-featured-ad
-hpjav.tv##.video-boxad, .mn-related-container
-hpjav.tv##.poplayer
-hpjav.tv##iframe[src*="exosrv"]
-
-popjav.tv##.hotadsholder
-popjav.tv##.poplayer
-popjav.tv##iframe[src*="exosrv"]
-
-hanime.tv##div:nth-of-type(1) > .mb-5.htv-carousel-container.lazy
-hanime.tv##.htvad.mobile, .inter
-
-nhentai.net##.advt
-m.gamer.com.tw##.download-app_box01
-
-
-! mfkhm.com
-
-s9.cnzz.com
-hm.baidu.com
-zz.bdstatic.com
-vpn.szdatayj.com
-new.xiongzhangad.com
-yanxuan.nosdn.127.net
-www.68710266.com
+||deismpaho.com^$script,domain=www.manhuache.com
+||lirotroodles.com^$script,domain=www.manhuache.com
