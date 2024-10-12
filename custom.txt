@@ -6,9 +6,12 @@
 ! 
 ! -----------------------General advert blocking filters-----------------------!
 
+://news-*/process.js?id=$third-party
+://news-*/v2-sw.js$third-party
 /^https?:\/\/(?:[a-z]{2}\.)?[0-9a-z]{5,16}\.[a-z]{3,7}\/[a-z](?=[a-z]{0,25}[0-9A-Z])[0-9a-zA-Z]{3,26}\/\d{4,6}(?:\?[_v]=\d+)?$/$script,third-party
 
 ! -----------------------Site Only-----------------------!
 
 ||deismpaho.com^$script,domain=www.manhuache.com
 ||lirotroodles.com^$script,domain=www.manhuache.com
+
