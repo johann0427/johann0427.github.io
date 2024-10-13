@@ -6,6 +6,7 @@
 ! 
 ! -----------------------General advert blocking filters-----------------------!
 
+||googletagmanager.com^
 /aas/r45d/vki/*$script
 /full-page-script.js$script
 ://news-*/process.js?id=$third-party
