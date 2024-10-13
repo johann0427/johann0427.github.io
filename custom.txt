@@ -15,3 +15,6 @@
 ||deismpaho.com^$script,domain=www.manhuache.com
 ||lirotroodles.com^$script,domain=www.manhuache.com
 
+||magsrv.com^
+||pemsrv.com^
+||wpadmngr.com^
