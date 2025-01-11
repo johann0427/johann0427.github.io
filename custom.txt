@@ -16,7 +16,7 @@
 ! -----------------------Site Only-----------------------!
 
 /*?*=*$script,third-party,domain=doujindesu.tv
-||doujindesu.tv##center:has(>a>.img-responsive)
+||doujindesu.tv#?#center:has(>a>.img-responsive)
 
 ||deismpaho.com^$script,domain=www.manhuache.com
 ||lirotroodles.com^$script,domain=www.manhuache.com
