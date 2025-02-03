@@ -1,7 +1,7 @@
 [ABP for Mobile Browsers]
-! Version: 20241012
+! Version: 20250203
 ! Title: ABP Mobile Custom List
-! Last modified: 12 Jan 2024 03:20 UTC
+! Last modified: 03 Feb 2025 18:15 UTC
 ! *** easylist:template_header.txt ***
 ! 
 ! -----------------------General advert blocking filters-----------------------!
@@ -17,8 +17,9 @@
 
 /*?*=*$script,third-party,domain=doujindesu.tv
 
-@@||pemsrv.com^$document
-||pemsrv.com^$script,image,media
+||pemsrv.com^$inline-script
+||pemsrv.com^$xmlhttprequest
+||pemsrv.com^$popup,popunder
 
 ||doujindesu.tv#?#center:-abp-has(>a>.img-responsive)
 ||deismpaho.com^$script,domain=www.manhuache.com
