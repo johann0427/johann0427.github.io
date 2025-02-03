@@ -16,13 +16,15 @@
 ! -----------------------Site Only-----------------------!
 
 /*?*=*$script,third-party,domain=doujindesu.tv
-||doujindesu.tv#?#center:-abp-has(>a>.img-responsive)
 
+@@||pemsrv.com^$document
+||pemsrv.com^$script,image,media
+
+||doujindesu.tv#?#center:-abp-has(>a>.img-responsive)
 ||deismpaho.com^$script,domain=www.manhuache.com
 ||lirotroodles.com^$script,domain=www.manhuache.com
 
 ||magsrv.com^
-||pemsrv.com^
 ||wpadmngr.com^
 
 ||histats.com^$third-party
