@@ -17,9 +17,9 @@
 
 /*?*=*$script,third-party,domain=doujindesu.tv
 
-||pemsrv.com^$inline-script
+||pemsrv.com^$script,subdocument
 ||pemsrv.com^$xmlhttprequest
-||pemsrv.com^$popup,popunder
+||pemsrv.com^$popup
 
 ||doujindesu.tv#?#center:-abp-has(>a>.img-responsive)
 ||deismpaho.com^$script,domain=www.manhuache.com
