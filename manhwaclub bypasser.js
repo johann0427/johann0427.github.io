@@ -28,26 +28,22 @@ document.querySelectorAll('a').forEach(link => {
   });
 });
 
-// 攔截可能的強制跳轉腳本（例如 setTimeout 或 setInterval 中的跳轉）
-(function() {
-  const originalSetTimeout = window.setTimeout;
-  const originalSetInterval = window.setInterval;
 
-  window.setTimeout = function(callback, delay) {
-    // 攔截跳轉函數
-    if (callback.toString().includes('window.location.href')) {
-      console.log('阻止強制跳轉');
-      return;
-    }
-    return originalSetTimeout(callback, delay);
-  };
+// 獲取 .wp-pagenavi 元素並進行處理
+const pageNaviElement = document.querySelector('.wp-pagenavi');
 
-  window.setInterval = function(callback, delay) {
-    // 攔截跳轉函數
-    if (callback.toString().includes('window.location.href')) {
-      console.log('阻止強制跳轉');
-      return;
-    }
-    return originalSetInterval(callback, delay);
-  };
-})();
+if (pageNaviElement) {
+  // 複製 .wp-pagenavi 元素
+  const clonedElement = pageNaviElement.cloneNode(true);
+
+  // 設置複製元素的樣式
+  clonedElement.style.cssText = 'margin = 0 0 24px 0; float: none;';
+
+  // 找到 .wp-pagenavi 的前三個父元素，並將複製的元素插入到它們的前面
+  let parent = pageNaviElement.parentNode;
+  for (let i = 0; i < 3 && parent; i++) {
+    parent.insertBefore(clonedElement, parent.firstChild);
+    parent = parent.parentNode; // 移動到上一層父元素
+  }
+}
+
