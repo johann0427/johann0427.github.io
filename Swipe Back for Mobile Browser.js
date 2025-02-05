@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         手勢觸發返回 (Safari Mobile)
 // @namespace    http://tampermonkey.net/
-// @version      1.7
-// @description  透過滑動觸發返回按鈕，滑動到底等待一定時間後自動返回上一頁
+// @version      1.8
+// @description  透過滑動觸發返回按鈕，滑動到底 1 秒後震動並返回上一頁
 // @author       ChatGPT
 // @match        *://*/*
 // @grant        none
@@ -96,12 +96,15 @@
             backButton.style.opacity = '1';
         }
 
-        // 若滑動超過 `triggerDistance`，開始倒數計時 2 秒
+        // 若滑動超過 `triggerDistance`，開始倒數計時 1 秒
         if (distance > triggerDistance && !returnTimer) {
             returnTimer = setTimeout(() => {
+                if ("vibrate" in navigator) {
+                    navigator.vibrate(100); // 震動 100 毫秒
+                }
                 window.history.back();
                 returnTimer = null; // 重置計時器
-            }, 2000);
+            }, 1000);
         }
     });
 
