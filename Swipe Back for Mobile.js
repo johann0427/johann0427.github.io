@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         手勢觸發返回 (Safari Mobile)
 // @namespace    http://tampermonkey.net/
-// @version      1.6
-// @description  透過滑動觸發返回按鈕，且滑到底可直接返回上一頁
+// @version      1.7
+// @description  透過滑動觸發返回按鈕，滑動到底等待一定時間後自動返回上一頁
 // @author       ChatGPT
 // @match        *://*/*
 // @grant        none
@@ -35,7 +35,7 @@
     backButton.textContent = '←';
     backButton.style.cssText = `
         position: fixed;
-        right: 30px; /* 按鈕距離螢幕右側 30px（比之前更遠） */
+        right: 30px; /* 按鈕距離螢幕右側 30px */
         top: 50%;
         transform: translateY(-50%);
         width: 40px;
@@ -62,12 +62,13 @@
     let touchStartX = 0;
     let touchEndX = 0;
     let isSwiping = false;
-    let triggerDistance = 100; // 需要滑動超過 100px 才會自動返回
+    let triggerDistance = 100; // 需要滑動超過 100px 才會開始倒數計時
+    let returnTimer = null; // 記錄倒數計時器
 
     // 監聽手指觸摸開始
     document.addEventListener('touchstart', (e) => {
         touchStartX = e.touches[0].clientX;
-        isSwiping = touchStartX > window.innerWidth - 60;  // 右側 60px 內才啟動，讓出更多空間給 Safari 原生手勢
+        isSwiping = touchStartX > window.innerWidth - 60;  // 右側 60px 內才啟動
 
         if (isSwiping) {
             trackIndicator.style.display = 'block';
@@ -95,16 +96,24 @@
             backButton.style.opacity = '1';
         }
 
-        // 若滑動超過 `triggerDistance`，直接觸發返回
-        if (distance > triggerDistance) {
-            window.history.back();
-            isSwiping = false; // 防止觸發多次
+        // 若滑動超過 `triggerDistance`，開始倒數計時 2 秒
+        if (distance > triggerDistance && !returnTimer) {
+            returnTimer = setTimeout(() => {
+                window.history.back();
+                returnTimer = null; // 重置計時器
+            }, 2000);
         }
     });
 
     // 監聽手指離開
     document.addEventListener('touchend', () => {
         trackIndicator.style.display = 'none'; // 隱藏滑動指示條
+
+        // 如果滑動未達到 `triggerDistance`，取消計時器
+        if (returnTimer) {
+            clearTimeout(returnTimer);
+            returnTimer = null;
+        }
 
         // 自動隱藏按鈕
         setTimeout(() => {
