@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         手勢觸發返回 (Safari Mobile)
 // @namespace    http://tampermonkey.net/
-// @version      2.0
-// @description  透過滑動觸發返回按鈕，滑動到底 1 秒後震動並返回上一頁
+// @version      1.9
+// @description  透過滑動觸發返回按鈕，滑動到底後震動並返回上一頁
 // @author       ChatGPT
 // @match        *://*/*
 // @grant        none
@@ -34,10 +34,10 @@
         right: 0;
         top: 50%;
         transform: translateY(-50%);
-        width: 15px;  /* 增加指示條長度 */
-        height: 50px;  /* 增加指示條長度 */
+        width: 10px;
+        height: 40px;
         background: rgba(0, 0, 0, 0.2);
-        border-radius: 7px;
+        border-radius: 5px;
         z-index: 9998;
         display: none;  /* 預設隱藏 */
         transition: background 0.2s, width 0.2s;
@@ -48,8 +48,9 @@
     backButton.textContent = '←';
     backButton.style.cssText = `
         position: fixed;
-        right: 50%; /* 把按鈕放在螢幕中央 */
-        transform: translate(50%, -50%); /* 精確對齊 */
+        right: 30px; /* 按鈕距離螢幕右側 30px */
+        top: 50%;
+        transform: translateY(-50%);
         width: 40px;
         height: 40px;
         background: white;
@@ -85,7 +86,7 @@
         if (isSwiping) {
             trackIndicator.style.display = 'block';
             trackIndicator.style.background = 'rgba(0, 0, 0, 0.2)';
-            trackIndicator.style.width = '15px';  // 增加初始寬度
+            trackIndicator.style.width = '10px';
         }
     });
 
@@ -98,7 +99,7 @@
         // 更新滑動指示條的寬度與顏色（視覺化滑動進度）
         if (distance > 0) {
             let progress = Math.min(distance / triggerDistance, 1); // 限制最大變化
-            trackIndicator.style.width = `${15 + progress * 50}px`; // 最大寬度 65px
+            trackIndicator.style.width = `${10 + progress * 40}px`; // 最大寬度 50px
             trackIndicator.style.background = `rgba(0, 0, 0, ${0.2 + progress * 0.5})`;
         }
 
