@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         手勢觸發返回 (Safari Mobile)
 // @namespace    http://tampermonkey.net/
-// @version      1.8
-// @description  透過滑動觸發返回按鈕，滑動到底 1 秒後震動並返回上一頁
+// @version      1.9
+// @description  透過滑動觸發返回按鈕，滑動到底 1 秒後返回上一頁
 // @author       ChatGPT
 // @match        *://*/*
 // @grant        none
@@ -13,6 +13,19 @@
 
     // 避免在 iframe 內運行
     if (window.top !== window) return;
+
+    // 定義 CSS 震動動畫
+    let style = document.createElement('style');
+    style.textContent = `
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-3px); }
+            50% { transform: translateX(3px); }
+            75% { transform: translateX(-3px); }
+            100% { transform: translateX(0); }
+        }
+    `;
+    document.head.appendChild(style);
 
     // 創建滑動指示條
     let trackIndicator = document.createElement('div');
@@ -65,6 +78,9 @@
     let triggerDistance = 100; // 需要滑動超過 100px 才會開始倒數計時
     let returnTimer = null; // 記錄倒數計時器
 
+    // 預載無聲音效
+    let silentAudio = new Audio('https://www.soundjay.com/button/beep-07.wav'); // 可換成更短的靜音 MP3
+
     // 監聽手指觸摸開始
     document.addEventListener('touchstart', (e) => {
         touchStartX = e.touches[0].clientX;
@@ -99,10 +115,17 @@
         // 若滑動超過 `triggerDistance`，開始倒數計時 1 秒
         if (distance > triggerDistance && !returnTimer) {
             returnTimer = setTimeout(() => {
-                if ("vibrate" in navigator) {
-                    navigator.vibrate(100); // 震動 100 毫秒
-                }
-                window.history.back();
+                // 觸發 CSS 震動效果
+                backButton.style.animation = 'shake 0.1s linear 2';
+
+                // 播放無聲音效
+                silentAudio.play().catch(() => {});
+
+                // 1 秒後返回上一頁
+                setTimeout(() => {
+                    window.history.back();
+                }, 100);
+                
                 returnTimer = null; // 重置計時器
             }, 1000);
         }
@@ -127,7 +150,11 @@
 
     // 點擊按鈕返回上一頁（仍然保留）
     backButton.onclick = () => {
-        window.history.back();
+        backButton.style.animation = 'shake 0.1s linear 2'; // 震動動畫
+        silentAudio.play().catch(() => {}); // 播放無聲音效
+        setTimeout(() => {
+            window.history.back();
+        }, 100);
     };
 
 })();
