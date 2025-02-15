@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         manhwaclub bypasser
+// @name         manhwaclub enhancer
 // @namespace    http://tampermonkey.net/
 // @version      0.2
 // @description  prevent pemsrv redirect issues
@@ -13,6 +13,9 @@
 const style = document.createElement('style');
 style.type = 'text/css';
 style.textContent = `
+  .post-title a {
+    word-break: break-all;
+  }
   .c-new-tag a {
     padding: 0 3px 0 3px;
     background: #ba231f;
