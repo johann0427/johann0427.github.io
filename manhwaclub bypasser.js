@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         manhwaclub bypasser
 // @namespace    http://tampermonkey.net/
-// @version      2025-02-03
+// @version      0.2
 // @description  prevent pemsrv redirect issues
 // @author       You
 // @match        *://manhwaclub.net/*
@@ -9,23 +9,37 @@
 // @grant        none
 // ==/UserScript==
 
-// 攔截頁面中的所有 'a' 元素點擊
-document.querySelectorAll('a').forEach(link => {
-  link.addEventListener('click', function(e) {
-    e.preventDefault(); // 阻止默認行為，避免強制跳轉
 
-    const targetUrl = link.href;
+const style = document.createElement('style');
+style.type = 'text/css';
+style.textContent = `
+  .c-new-tag a {
+    padding: 0 3px 0 3px;
+    background: #ba231f;
+    font-family: inherit;
+  }
+  .chapter.font-meta {
+    float: right;
+  }
+  span.post-on.font-meta {
+    float: right;
+    position: relative;
+    right: 5px;
+  }
+`;
+document.body.appendChild(style);
 
-    // 如果鏈接指向 pemsrv.com，則跳過處理，否則直接跳轉到原本鏈接
-    if (targetUrl.includes('pemsrv.com')) {
-      console.log('防止轉址，正在處理原始鏈接');
-      // 這裡可以進行處理，根據需要跳轉到目標網址，避免被強制跳轉
-      window.location.href = targetUrl; // 使用原始鏈接進行跳轉
-    } else {
-      // 如果是正常的鏈接，直接跳轉
-      window.location.href = targetUrl;
-    }
-  });
+function shortenTime(text) {
+    return text.replace(/(\d+) (days?|hours?) ago/, (match, num, unit) => {
+        return unit.startsWith("d") ? `${num} hrs` : `${num} hrs`;
+    });
+}
+
+//
+document.querySelectorAll('.c-new-tag').forEach(newtag => {
+    const ahref = newtag.querySelector('a')
+    const time = ahref.getAttribute('title');
+    ahref.innerHTML = shortenTime(time);
 });
 
 
