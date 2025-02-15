@@ -2,7 +2,7 @@
 // @name         manhwaclub enhancer
 // @namespace    http://tampermonkey.net/
 // @version      0.2
-// @description  prevent pemsrv redirect issues
+// @description  An enhanced website UI for easier reading
 // @author       You
 // @match        *://manhwaclub.net/*
 // @icon         https://icons.duckduckgo.com/ip2/manhwaclub.net.ico
