@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         manhwaclub enhancer
 // @namespace    http://tampermonkey.net/
-// @version      0.2
+// @version      0.3
 // @description  An enhanced website UI for easier reading
 // @author       You
 // @match        *://manhwaclub.net/*
@@ -16,13 +16,15 @@ style.textContent = `
   .post-title a {
     word-break: break-all;
   }
-  .c-new-tag a {
+  .post-on .c-new-tag a {
     padding: 0 3px 0 3px;
+    color: #fff;
     background: #ba231f;
     font-family: inherit;
   }
-  .chapter.font-meta {
+  .page-listing-item .chapter.font-meta {
     float: right;
+    margin: 0 0 5px 0;
   }
   span.post-on.font-meta {
     float: right;
@@ -32,13 +34,14 @@ style.textContent = `
 `;
 document.body.appendChild(style);
 
+
 function shortenTime(text) {
     return text.replace(/(\d+) (days?|hours?) ago/, (match, num, unit) => {
-        return unit.startsWith("d") ? `${num} hrs` : `${num} hrs`;
+        return unit.startsWith("d") ? `${num} d` : `${num} h`;
     });
 }
 
-//
+// 優化更新標籤的顯示時間
 document.querySelectorAll('.c-new-tag').forEach(newtag => {
     const ahref = newtag.querySelector('a')
     const time = ahref.getAttribute('title');
