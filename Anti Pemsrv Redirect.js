@@ -4,6 +4,7 @@
 // @version      1.5
 // @description  防止 pemsrv.com 劫持 a href，並完全阻止所有 pemsrv.com 請求
 // @author       You
+// @icon         https://i.meee.com.tw/Ochi717.png
 // @match        *://manhwaclub.net/*
 // @match        *://manhwabuddy.com/*
 // @grant        none
