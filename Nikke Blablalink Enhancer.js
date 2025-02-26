@@ -128,6 +128,7 @@ const observeApp = () => {
                     // 監聽按鈕點擊事件，複製 CDKey 並顯示成功及跳轉
                     redir.addEventListener('click', function (event) {
 
+                        event.stopPropagation();
                         const textarea = document.createElement('textarea');
                         textarea.value = finalCDkey;
                         document.body.appendChild(textarea);
