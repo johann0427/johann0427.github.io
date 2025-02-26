@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nikke Blablalink Enhancer
 // @namespace    http://tampermonkey.net/
-// @version      1.1
+// @version      1.2
 // @description  for better PC browsing experiences!
 // @author       Johann
 // @match        https://www.blablalink.com/*
@@ -123,7 +123,7 @@ const observeApp = () => {
                     redir.href = "/cdk";
                     redir.title = finalCDkey;
                     redir.textContent = "CDK";
-                    redir.style.cssText = "float: right; border: 1px dotted; border-radius: 4px; padding: 3px 2px 1px 2px; color: #e9967a";
+                    redir.style.cssText = "position: absolute; right: 0; margin-right: 12px; border: 1px dotted; border-radius: 4px; padding: 3px 2px 1px 2px; color: #e9967a";
 
                     // 監聽按鈕點擊事件，複製 CDKey 並顯示成功及跳轉
                     redir.addEventListener('click', function (event) {
