@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Supjav for Mobile
 // @namespace    http://tampermonkey.net/
-// @version      0.1
+// @version      0.2
 // @description  replace download column by referer sites
 // @author       You
 // @match        https://supjav.com/*/*
@@ -57,11 +57,18 @@
         </div>
     `;
 
-    // 替換 .downs 區塊
+    // 嘗試取得 .downs 和 .btns
     let downsDiv = document.querySelector('.downs');
+    let serversDiv = document.querySelector('.btns');
+
     if (downsDiv) {
         downsDiv.replaceWith(refererDiv);
+        console.log("已成功替換為友站區塊！");
+    } else if (serversDiv) {
+        serversDiv.insertAdjacentElement('afterend', refererDiv);
+        console.log("找不到 Download Server，另外插入友站區塊！");
     } else {
-        console.warn("找不到 .downs，無法替換！");
+        console.warn("找不到相關元素，無法創建新區塊！");
     }
+    
 })();
