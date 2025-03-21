@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Koharu.to - Restore Old Layout
 // @namespace    http://tampermonkey.net/
-// @version      2025-03-21
+// @version      0.2
 // @description  get back to old design
 // @author       Johann
 // @match        https://niyaniya.moe/*
@@ -50,10 +50,7 @@ function fixedNav() {
     style.textContent = `
         nav:first-of-type {
             position: fixed;
-            opacity: 0.2;
-        }
-        nav:hover {
-            opacity: 1;
+            opacity: 0.8;
         }
     `;
     document.head.appendChild(style);
