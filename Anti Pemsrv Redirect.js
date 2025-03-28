@@ -1,12 +1,14 @@
 // ==UserScript==
 // @name         Anti Pemsrv Redirect (Enhanced Blocking)
 // @namespace    http://tampermonkey.net/
-// @version      1.5
-// @description  防止 pemsrv.com 劫持 a href，並完全阻止所有 pemsrv.com 請求
+// @version      1.6
+// @description  防止 pemsrv.com 劫持，並完全阻止所有 pemsrv.com 請求
 // @author       You
 // @icon         https://i.meee.com.tw/Ochi717.png
 // @match        *://manhwaclub.net/*
 // @match        *://manhwabuddy.com/*
+// @match        *://manhwaread.com/*
+// @match        *://manhwa-raw.com/*
 // @grant        none
 // ==/UserScript==
 
@@ -98,5 +100,13 @@
     // 監聽 DOM 變化，只影響 <a> 標籤
     const linkObserver = new MutationObserver(() => restoreLinks());
     linkObserver.observe(document.body, { childList: true, subtree: true });
+
+
+    // **確保腳本在快取頁面仍然生效**
+    window.addEventListener("pageshow", () => {
+    console.log("Page Show Event - Ensuring Blocked XHR Works");
+    restoreLinks(); // 再次修復 a 標籤，確保 href 沒被劫持
+});
+
 
 })();
