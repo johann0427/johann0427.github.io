@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Video Preview</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: black;
+    }
+    iframe {
+      width: 100vw;
+      height: 100vh;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const videoId = params.get('video');
+
+    if (videoId) {
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&playsinline=1&controls=0&enablejsapi=0&modestbranding=1&rel=0`;
+      iframe.allow = 'autoplay; encrypted-media';
+      document.body.appendChild(iframe);
+    } else {
+      document.body.textContent = '⚠️ No video ID provided.';
+    }
+  </script>
+</body>
+</html>
