@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Safari Ad Blocker for Dynamic Ads
+// @name         Network-level Ad Blocker
 // @namespace    http://tampermonkey.net/
-// @version      1.02
-// @description  阻擋動態生成廣告，防止跳轉/彈窗 (iPhone Safari / Stay for Safari)
+// @version      1.04
+// @description  在網路請求階段阻擋廣告
 // @match        *://*/*
 // @run-at       document-start
 // ==/UserScript==
@@ -10,40 +10,30 @@
 (function() {
     'use strict';
 
-    // --- 防止 document.write 和 eval 注入 ---
-    const originalWrite = document.write;
-    document.write = function(){ console.log('document.write blocked'); };
-    const originalEval = window.eval;
-    window.eval = function(){ console.log('eval blocked'); };
+    const blockedDomains = [
+        'xdmi4s.com',
+        'm.xiaomaolm.com',   // 可以加上更多廣告域
+    ];
 
-    // --- 阻止 window.location 跳轉 ---
-    ['assign','replace','reload'].forEach(fn=>{
-        window.location[fn] = function(){ console.log(`window.location.${fn} blocked`); };
-    });
-
-    // --- 阻止廣告點擊事件 ---
-    document.addEventListener('click', e => {
-        if(e.target.closest('.pbodapef_b, .ad-container, [id^="ad"]')) {
-            e.stopImmediatePropagation();
-            e.preventDefault();
-            console.log('Ad click blocked');
+    // --- 攔截 fetch ---
+    const originalFetch = window.fetch;
+    window.fetch = function(input, init) {
+        const url = typeof input === 'string' ? input : input.url;
+        if(blockedDomains.some(d => url.includes(d))) {
+            console.log(`Blocked fetch request: ${url}`);
+            return new Promise(() => {}); // 永不 resolve
         }
-    }, true);
-
-    // --- MutationObserver 自動移除廣告元素 ---
-    const removeAds = () => {
-        const ads = document.querySelectorAll(
-            '.pbodapef_b, .ad-container, script[src*="xdmi4s.com"], iframe[src*="xdmi4s.com"]'
-        );
-        if(ads.length) {
-            ads.forEach(el=>el.remove());
-            console.log(`Removed ${ads.length} ad elements`);
-        }
+        return originalFetch.apply(this, arguments);
     };
 
-    const observer = new MutationObserver(removeAds);
-    observer.observe(document.documentElement || document.body, {childList: true, subtree: true});
-
-    // --- 初始清理一次 ---
-    window.addEventListener('DOMContentLoaded', removeAds);
+    // --- 攔截 XMLHttpRequest ---
+    const originalOpen = XMLHttpRequest.prototype.open;
+    XMLHttpRequest.prototype.open = function(method, url) {
+        if(blockedDomains.some(d => url.includes(d))) {
+            console.log(`Blocked XHR request: ${url}`);
+            this.abort(); // 直接中斷
+            return;
+        }
+        return originalOpen.apply(this, arguments);
+    };
 })();
