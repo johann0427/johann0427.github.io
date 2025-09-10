@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Stay Safari AdBlocker
 // @namespace    http://tampermonkey.net/
-// @version      1.0
+// @version      1.01
 // @description  阻擋特定廣告 script，支援 Stay for Safari
 // @match        *://*/*
 // @run-at       document-start
@@ -10,50 +10,62 @@
 (function() {
     'use strict';
 
-    // 廣告特徵
-    const blockedDomains = [
-        "m.xiaomaolm.com",
-        "adsbygoogle"
-    ];
-
-    const blockedInlinePatterns = [
-        /pbodapef_b/,            // 第一段 script 的 class 名稱
-        /EujtLXsukpl/,           // 第二段 script 的混淆特徵
-        /var:{\"8.5.0\"/,        // 第三段 ad.js 特徵
-    ];
-
-    // 監控新增 script
-    const observer = new MutationObserver(mutations => {
-        mutations.forEach(m => {
-            m.addedNodes.forEach(node => {
-                if (node.tagName === "SCRIPT") {
-                    // 外部 script
-                    if (node.src && blockedDomains.some(d => node.src.includes(d))) {
-                        node.remove();
-                        console.log("[AdBlock] 移除外部廣告:", node.src);
-                        return;
-                    }
-                    // inline script
-                    if (!node.src && node.textContent && blockedInlinePatterns.some(p => p.test(node.textContent))) {
-                        node.remove();
-                        console.log("[AdBlock] 移除 inline 廣告 script");
-                        return;
-                    }
-                }
-            });
-        });
-    });
-
-    observer.observe(document.documentElement, { childList: true, subtree: true });
-
-    // 防止第一段 inline script document.write 生成的廣告
+    // -------------------------------
+    // 1️⃣ 攔截 document.write
+    // -------------------------------
     const originalWrite = document.write;
-    document.write = function(str) {
-        if (/pbodapef_b/.test(str)) {
-            console.log("[AdBlock] 攔截 document.write 廣告");
-            return;
+    document.write = function(...args) {
+        const content = args.join('');
+        // 判斷是否為已知廣告特徵
+        if (/xiaomaolm|pbodapef_b|EujtLXsukpl7/.test(content)) {
+            console.log('Blocked inline ad via document.write:', content.slice(0, 50));
+            return; // 阻擋廣告
         }
-        return originalWrite.apply(document, arguments);
+        return originalWrite.apply(this, args);
     };
 
+    // -------------------------------
+    // 2️⃣ 移除已知廣告元素
+    // -------------------------------
+    function removeAds(node) {
+        if (!node) return;
+        // script src 或內部廣告特徵
+        if (
+            (node.tagName === 'SCRIPT' && /xiaomaolm|pbodapef_b|EujtLXsukpl7/.test(node.src + node.textContent)) ||
+            (node.tagName === 'IFRAME' && /xiaomaolm|pbodapef_b/.test(node.src)) ||
+            (node.tagName === 'DIV' && /pbodapef_b/.test(node.className))
+        ) {
+            node.remove();
+            console.log('Removed ad element:', node);
+        }
+    }
+
+    // -------------------------------
+    // 3️⃣ 監控 DOM 變化
+    // -------------------------------
+    const observer = new MutationObserver((mutations) => {
+        for (const m of mutations) {
+            for (const node of m.addedNodes) {
+                removeAds(node);
+                // 如果是容器，檢查子元素
+                if (node.querySelectorAll) {
+                    node.querySelectorAll('script,iframe,div').forEach(removeAds);
+                }
+            }
+        }
+    });
+
+    observer.observe(document.documentElement || document.body, {
+        childList: true,
+        subtree: true
+    });
+
+    // -------------------------------
+    // 4️⃣ 定時清理（補漏）
+    // -------------------------------
+    setInterval(() => {
+        document.querySelectorAll('script,iframe,div').forEach(removeAds);
+    }, 2000);
+
 })();
+
