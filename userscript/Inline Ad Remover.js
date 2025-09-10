@@ -1,64 +1,64 @@
 // ==UserScript==
 // @name         Kill Inline Ad Scripts
 // @namespace    http://tampermonkey.net/
-// @version      1.0
+// @version      1.1
 // @description  阻止三種內嵌廣告 script
 // @author       You
 // @match        *://*/*
-// @run-at       document-start
+// @include      http://*/*
+// @include      https://*/*
+// @run-at       document-idle
 // ==/UserScript==
 
 (function() {
   'use strict';
 
   //------------------------------------------------
-  // 攔截 document.write => 阻止 "pbodapef_b"
+  // 1) 攔截 document.write (避免透明黑塊 redirect)
   //------------------------------------------------
-  document.write = new Proxy(document.write, {
-    apply(target, thisArg, args) {
-      if (args && args[0] && args[0].includes("pbodapef_b")) {
-        console.warn("[AdBlock] 阻止 pbodapef_b 廣告");
-        return;
-      }
-      return Reflect.apply(target, thisArg, args);
+  const origWrite = document.write;
+  document.write = function(...args) {
+    if (args[0] && args[0].includes("pbodapef_b")) {
+      // Safari: 用 alert 測試是否真的執行
+      console.log("[AdBlock] 阻止 pbodapef_b 廣告");
+      return;
     }
-  });
-
-  //------------------------------------------------
-  // 攔截 appendChild script (針對 iframe 廣告)
-  //------------------------------------------------
-  const origAppendChild = Element.prototype.appendChild;
-  Element.prototype.appendChild = function(el) {
-    if (el.tagName === "IFRAME") {
-      if (el.src && /xdmi4s\.com|ads|doubleclick/.test(el.src)) {
-        console.warn("[AdBlock] 移除廣告 iframe:", el.src);
-        return el; // 阻止掛載
-      }
-    }
-    if (el.tagName === "SCRIPT") {
-      const code = el.innerHTML || "";
-      if (/new Function\(|EujtLXsu/.test(code)) {
-        console.warn("[AdBlock] 阻止惡意 new Function script");
-        return el;
-      }
-    }
-    return origAppendChild.call(this, el);
+    return origWrite.apply(document, args);
   };
 
   //------------------------------------------------
-  // 監控動態新增的 script (處理直接 inline 注入)
+  // 2) 監控新加入的 script/iframe，判斷是否廣告
   //------------------------------------------------
+  function scanNode(node) {
+    if (node.tagName === "SCRIPT") {
+      const code = node.innerHTML || "";
+      if (code.includes("pbodapef_b") ||
+          (code.includes("new Function") && code.includes("EujtLXsu"))) {
+        console.log("[AdBlock] 移除惡意 inline script");
+        node.remove();
+      }
+    }
+    if (node.tagName === "IFRAME") {
+      const src = node.src || "";
+      if (/xdmi4s\.com|doubleclick|ads/.test(src)) {
+        console.log("[AdBlock] 移除廣告 iframe:", src);
+        node.remove();
+      }
+    }
+    if (node.classList && node.classList.contains("pbodapef_b")) {
+      console.log("[AdBlock] 移除透明廣告區塊");
+      node.remove();
+    }
+  }
+
+  // 初始清理
+  document.querySelectorAll("script,iframe,.pbodapef_b").forEach(scanNode);
+
+  // 動態監控
   const observer = new MutationObserver(muts => {
     for (const m of muts) {
       for (const node of m.addedNodes) {
-        if (node.nodeType === 1 && node.tagName === "SCRIPT") {
-          const code = node.innerHTML || "";
-          if (code.includes("pbodapef_b") ||
-              code.includes("new Function") && code.includes("EujtLXsu")) {
-            console.warn("[AdBlock] 移除 inline 惡意 script");
-            node.remove();
-          }
-        }
+        if (node.nodeType === 1) scanNode(node);
       }
     }
   });
