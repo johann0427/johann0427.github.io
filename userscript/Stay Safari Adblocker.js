@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Stay Safari AdBlocker
+// @name         Safari Ad Blocker for Dynamic Ads
 // @namespace    http://tampermonkey.net/
-// @version      1.01
-// @description  阻擋特定廣告 script，支援 Stay for Safari
+// @version      1.02
+// @description  阻擋動態生成廣告，防止跳轉/彈窗 (iPhone Safari / Stay for Safari)
 // @match        *://*/*
 // @run-at       document-start
 // ==/UserScript==
@@ -10,62 +10,40 @@
 (function() {
     'use strict';
 
-    // -------------------------------
-    // 1️⃣ 攔截 document.write
-    // -------------------------------
+    // --- 防止 document.write 和 eval 注入 ---
     const originalWrite = document.write;
-    document.write = function(...args) {
-        const content = args.join('');
-        // 判斷是否為已知廣告特徵
-        if (/xiaomaolm|pbodapef_b|EujtLXsukpl7/.test(content)) {
-            console.log('Blocked inline ad via document.write:', content.slice(0, 50));
-            return; // 阻擋廣告
+    document.write = function(){ console.log('document.write blocked'); };
+    const originalEval = window.eval;
+    window.eval = function(){ console.log('eval blocked'); };
+
+    // --- 阻止 window.location 跳轉 ---
+    ['assign','replace','reload'].forEach(fn=>{
+        window.location[fn] = function(){ console.log(`window.location.${fn} blocked`); };
+    });
+
+    // --- 阻止廣告點擊事件 ---
+    document.addEventListener('click', e => {
+        if(e.target.closest('.pbodapef_b, .ad-container, [id^="ad"]')) {
+            e.stopImmediatePropagation();
+            e.preventDefault();
+            console.log('Ad click blocked');
         }
-        return originalWrite.apply(this, args);
+    }, true);
+
+    // --- MutationObserver 自動移除廣告元素 ---
+    const removeAds = () => {
+        const ads = document.querySelectorAll(
+            '.pbodapef_b, .ad-container, script[src*="xdmi4s.com"], iframe[src*="xdmi4s.com"]'
+        );
+        if(ads.length) {
+            ads.forEach(el=>el.remove());
+            console.log(`Removed ${ads.length} ad elements`);
+        }
     };
 
-    // -------------------------------
-    // 2️⃣ 移除已知廣告元素
-    // -------------------------------
-    function removeAds(node) {
-        if (!node) return;
-        // script src 或內部廣告特徵
-        if (
-            (node.tagName === 'SCRIPT' && /xiaomaolm|pbodapef_b|EujtLXsukpl7/.test(node.src + node.textContent)) ||
-            (node.tagName === 'IFRAME' && /xiaomaolm|pbodapef_b/.test(node.src)) ||
-            (node.tagName === 'DIV' && /pbodapef_b/.test(node.className))
-        ) {
-            node.remove();
-            console.log('Removed ad element:', node);
-        }
-    }
+    const observer = new MutationObserver(removeAds);
+    observer.observe(document.documentElement || document.body, {childList: true, subtree: true});
 
-    // -------------------------------
-    // 3️⃣ 監控 DOM 變化
-    // -------------------------------
-    const observer = new MutationObserver((mutations) => {
-        for (const m of mutations) {
-            for (const node of m.addedNodes) {
-                removeAds(node);
-                // 如果是容器，檢查子元素
-                if (node.querySelectorAll) {
-                    node.querySelectorAll('script,iframe,div').forEach(removeAds);
-                }
-            }
-        }
-    });
-
-    observer.observe(document.documentElement || document.body, {
-        childList: true,
-        subtree: true
-    });
-
-    // -------------------------------
-    // 4️⃣ 定時清理（補漏）
-    // -------------------------------
-    setInterval(() => {
-        document.querySelectorAll('script,iframe,div').forEach(removeAds);
-    }, 2000);
-
+    // --- 初始清理一次 ---
+    window.addEventListener('DOMContentLoaded', removeAds);
 })();
-
