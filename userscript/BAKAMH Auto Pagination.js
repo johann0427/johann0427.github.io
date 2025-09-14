@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BAKAMH Auto Pagination
 // @namespace    http://tampermonkey.net/
-// @version      1.2
+// @version      1.21
 // @description  Infinite Scroll And Auto Pagination
 // @match        https://bakamh.com/manhwa/*
 // @match        https://bakamh.com/manga/*
@@ -74,6 +74,17 @@
     if (el) {
       el.classList.remove("show-more");
     }
+    const style = document.createElement("style");
+    style.textContent = `
+      #manga-header {
+        display: none;
+      }
+      span.chapter-release-date {
+        float: right;
+        margin-top: 1rem;
+      }
+    `;
+    document.head.appendChild(style);
   }
 
 })();
