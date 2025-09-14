@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BAKAMH Auto Pagination
 // @namespace    http://tampermonkey.net/
-// @version      1.21
+// @version      1.3
 // @description  Infinite Scroll And Auto Pagination
 // @match        https://bakamh.com/manhwa/*
 // @match        https://bakamh.com/manga/*
@@ -71,6 +71,23 @@
   // manga page load more chapters
   if (window.location.pathname.startsWith("/manga/")) {
     const el = document.querySelector(".listing-chapters_main.show-more");
+    const ch = document.querySelectorAll(".chapter-loveYou a");
+
+    ch.forEach(a => {
+      const textWidth = a.scrollWidth;    // 文字實際寬度
+      const containerWidth = 180; // <a> 容器寬度
+
+      // 只有文字超過容器才加 marquee
+      if (textWidth > containerWidth) {
+        a.classList.add("marquee");
+
+        // 包一層 span 做動畫用
+        if (!a.querySelector("span")) {
+          a.innerHTML = `<span>${a.textContent.trim()}</span>`;
+        }
+      }
+    });
+
     if (el) {
       el.classList.remove("show-more");
     }
@@ -82,6 +99,23 @@
       span.chapter-release-date {
         float: right;
         margin-top: 1rem;
+      }
+      .marquee {
+        width: 180px;             /* 固定寬度 */
+        overflow: hidden;         /* 隱藏溢出 */
+        white-space: nowrap;      /* 不換行 */
+        position: relative;
+      }
+
+      .marquee span {
+        display: inline-block;
+        padding-left: 10px;
+        animation: marquee 2s linear infinite;
+      }
+
+      @keyframes marquee {
+        from { transform: translateX(0); }
+        to   { transform: translateX(-25%); }
       }
     `;
     document.head.appendChild(style);
