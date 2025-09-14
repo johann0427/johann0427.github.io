@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BAKAMH Auto Pagination
 // @namespace    http://tampermonkey.net/
-// @version      1.3
+// @version      1.4
 // @description  Infinite Scroll And Auto Pagination
 // @match        https://bakamh.com/manhwa/*
 // @match        https://bakamh.com/manga/*
@@ -61,6 +61,11 @@
     if ((window.innerHeight + window.scrollY) >= (document.body.offsetHeight - threshold)) {
       loadNextPage();
     }
+  }
+
+  const avatarImg = document.querySelector(".c-user_avatar-image img");
+  if (avatarImg) {
+    avatarImg.srcset = "https://discord.do/wp-content/uploads/2024/06/Akane.jpg 2x";
   }
 
   // main page auto pagination
