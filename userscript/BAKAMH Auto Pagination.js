@@ -1,9 +1,10 @@
 // ==UserScript==
 // @name         BAKAMH Auto Pagination
 // @namespace    http://tampermonkey.net/
-// @version      1.1
+// @version      1.2
 // @description  Infinite Scroll And Auto Pagination
 // @match        https://bakamh.com/manhwa/*
+// @match        https://bakamh.com/manga/*
 // @grant        none
 // ==/UserScript==
 
@@ -62,5 +63,17 @@
     }
   }
 
-  window.addEventListener("scroll", scrollHandler);
+  // main page auto pagination
+  if (window.location.pathname.startsWith("/manhwa/")) {
+    window.addEventListener("scroll", scrollHandler);
+  }
+
+  // manga page load more chapters
+  if (window.location.pathname.startsWith("/manga/")) {
+    const el = document.querySelector(".listing-chapters_main.show-more");
+    if (el) {
+      el.classList.remove("show-more");
+    }
+  }
+
 })();
