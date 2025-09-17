@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         BAKAMH Auto Pagination
 // @namespace    http://tampermonkey.net/
-// @version      1.4
-// @description  Infinite Scroll And Auto Pagination
+// @version      1.5
+// @description  Infinite Scroll And Auto Pagination with History Restore
 // @match        https://bakamh.com/manhwa/*
 // @match        https://bakamh.com/manga/*
 // @grant        none
@@ -20,6 +20,34 @@
 
   let loading = false;
   const threshold = 400;
+
+  // ----------- 狀態儲存 & 還原 ------------
+  function saveState() {
+    const container = document.querySelector("#loop-content");
+    if (container) {
+      history.replaceState({
+        page: currentPage,
+        html: container.innerHTML,
+        scrollY: window.scrollY
+      }, "", window.location.href);
+    }
+  }
+
+  function restoreState(state) {
+    if (!state) return;
+    const container = document.querySelector("#loop-content");
+    if (container && state.html) {
+      container.innerHTML = state.html;
+      currentPage = state.page || 1;
+      setTimeout(() => window.scrollTo(0, state.scrollY || 0), 0);
+      console.log(`♻️ 已還原到第 ${currentPage} 頁`);
+    }
+  }
+
+  window.addEventListener("popstate", (e) => {
+    restoreState(e.state);
+  });
+  // ---------------------------------------
 
   async function loadNextPage() {
     if (loading) return;
@@ -49,7 +77,10 @@
       const container = document.querySelector("#loop-content");
       items.forEach(el => container.appendChild(el));
 
-      console.log(`✅ 第 ${page} 頁已載入 (${items.length} 個項目)`);
+      console.log(`✅ 第 ${currentPage} 頁已載入 (${items.length} 個項目)`);
+
+      // 每次載入完成就存狀態
+      saveState();
     } catch (err) {
       console.error("❌ 載入失敗:", err);
     } finally {
@@ -63,6 +94,7 @@
     }
   }
 
+  // avatar 修改
   const avatarImg = document.querySelector(".c-user_avatar-image img");
   if (avatarImg) {
     avatarImg.srcset = "https://discord.do/wp-content/uploads/2024/06/Akane.jpg 2x";
@@ -70,6 +102,8 @@
 
   // main page auto pagination
   if (window.location.pathname.startsWith("/manhwa/")) {
+    // 嘗試還原快取狀態（如果有）
+    restoreState(history.state);
     window.addEventListener("scroll", scrollHandler);
   }
 
@@ -79,14 +113,11 @@
     const ch = document.querySelectorAll(".chapter-loveYou a");
 
     ch.forEach(a => {
-      const textWidth = a.scrollWidth;    // 文字實際寬度
-      const containerWidth = 180; // <a> 容器寬度
+      const textWidth = a.scrollWidth;
+      const containerWidth = 180;
 
-      // 只有文字超過容器才加 marquee
       if (textWidth > containerWidth) {
         a.classList.add("marquee");
-
-        // 包一層 span 做動畫用
         if (!a.querySelector("span")) {
           a.innerHTML = `<span>${a.textContent.trim()}</span>`;
         }
@@ -106,18 +137,16 @@
         margin-top: 1rem;
       }
       .marquee {
-        width: 180px;             /* 固定寬度 */
-        overflow: hidden;         /* 隱藏溢出 */
-        white-space: nowrap;      /* 不換行 */
+        width: 180px;
+        overflow: hidden;
+        white-space: nowrap;
         position: relative;
       }
-
       .marquee span {
         display: inline-block;
         padding-left: 10px;
         animation: marquee 2s linear infinite;
       }
-
       @keyframes marquee {
         from { transform: translateX(0); }
         to   { transform: translateX(-25%); }
