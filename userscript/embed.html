@@ -22,7 +22,8 @@
     const params = new URLSearchParams(location.search);
     const videoId = params.get('video');   // YouTube videoId
     const twitchChannel = params.get('twitch'); // Twitch channel name
-
+    const parent = params.get('parent');
+    
     if (videoId) {
       // --- YouTube ---
       const iframe = document.createElement('iframe');
@@ -32,9 +33,8 @@
 
     } else if (twitchChannel) {
       // --- Twitch ---
-      const parent = location.hostname; // 必須帶 parent，否則 Twitch 會卡住
       const iframe = document.createElement('iframe');
-      iframe.src = `https://player.twitch.tv/?channel=${encodeURIComponent(twitchChannel)}&parent=${parent}&autoplay=true&muted=true`;
+      iframe.src = `https://player.twitch.tv/?channel=${encodeURIComponent(twitchChannel)}&parent=${encodeURIComponent(parent)}&autoplay=true&muted=true`;
       iframe.allow = 'autoplay; encrypted-media';
       document.body.appendChild(iframe);
 
