@@ -10,7 +10,7 @@
       overflow: hidden;
       background-color: black;
     }
-    iframe {
+    iframe, #player {
       width: 100vw;
       height: 100vh;
       border: none;
@@ -18,18 +18,37 @@
   </style>
 </head>
 <body>
+  <div id="player"></div>
   <script>
     const params = new URLSearchParams(location.search);
-    const videoId = params.get('video');   // YouTube videoId
+    const videoId = params.get('video');       // YouTube videoId
     const twitchChannel = params.get('twitch'); // Twitch channel name
     const parent = params.get('parent');
-    
+
     if (videoId) {
       // --- YouTube ---
-      const iframe = document.createElement('iframe');
-      iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0&playsinline=1&controls=0&enablejsapi=0&modestbranding=1&rel=0`;
-      iframe.allow = 'autoplay; encrypted-media';
-      document.body.appendChild(iframe);
+      const tag = document.createElement('script');
+      tag.src = "https://www.youtube.com/iframe_api";
+      document.head.appendChild(tag);
+
+      window.onYouTubeIframeAPIReady = function() {
+        new YT.Player('player', {
+          videoId,
+          playerVars: {
+            autoplay: 1,
+            mute: 0,
+            playsinline: 1,
+            controls: 0,
+            modestbranding: 1,
+            rel: 0
+          },
+          events: {
+            onReady: e => {
+              e.target.setVolume(20); // 預設音量 20%
+            }
+          }
+        });
+      };
 
     } else if (twitchChannel) {
       // --- Twitch ---
@@ -44,4 +63,5 @@
   </script>
 </body>
 </html>
+
 
