@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         manhwaclub enhancer
 // @namespace    http://tampermonkey.net/
-// @version      0.7
+// @version      0.8
 // @description  Enhanced UI for easier reading manhwa
 // @match        *://manhwaclub.net/*
 // @grant        none
@@ -50,7 +50,7 @@
       max-height: 420px;
       background: #fff;
       border: 2px solid gold;
-      border-radius: 0 0 8px 8px;
+      border-radius: 8px;
       box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
       overflow-y: auto;
       z-index: 10001;
@@ -59,19 +59,16 @@
     }
     .favorite-panel.show { display: block; }
     .fav-header {
-        position: fixed;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 6px 10px;
-        background: gold;
-        color: black;
-        font-weight: bold;
-        gap: 8px;
-        width: inherit;
-        margin-top: -34px;
-        margin-left: -1.5px;
-        border-radius: 8px 8px 0 0;
+      position: sticky;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 10px;
+      background: gold;
+      color: black;
+      font-weight: bold;
+      gap: 8px;
+      top: 0;
     }
     .fav-list { padding: 8px; }
     .fav-item {
