@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         manhwaclub enhancer
 // @namespace    http://tampermonkey.net/
-// @version      0.8
+// @version      0.9
 // @description  Enhanced UI for easier reading manhwa
 // @match        *://manhwaclub.net/*
 // @grant        none
@@ -271,6 +271,10 @@
 
           fav.latest = latest.title;
           fav.latestUrl = latest.url;
+
+          // 把狀態寫回 fav
+          fav.isNew = Boolean(isNew);
+
           // 更新 item DOM（如果已存在就更新）
           if (itemEl) {
             // 移除舊有的 newBadge
@@ -303,13 +307,7 @@
               latestLink.href = fav.latestUrl;
               latestLink.textContent = fav.latest;
             }
-            // ✅ 追加 newBadge
-            if (isNew) {
-              const newBadge = document.createElement('span');
-              newBadge.className = 'fav-new';
-              newBadge.textContent = 'NEW';
-              itemEl.querySelector('.fav-left').appendChild(newBadge);
-            }
+
           }
         } else {
           if (itemEl) {
@@ -321,7 +319,29 @@
 
       localStorage.setItem(STORAGE_KEY, JSON.stringify(favoritesLocal));
       // 是否重新 render 清單以確保一致
-     /* await updateFavoriteList(); */
+      await updateFavoriteList();
+      // 重新 render 後貼上 NEW 標籤
+      const updatedFavorites = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      await new Promise(r => setTimeout(r, 0)); // 讓瀏覽器完成 DOM render
+
+      updatedFavorites.forEach(fav => {
+        if (!fav.isNew) return;
+        const items = panel.querySelectorAll('.fav-item');
+        for (const item of items) {
+          const titleEl = item.querySelector('.fav-title');
+          if (!titleEl) continue;
+          if (titleEl.textContent.trim() === (fav.title || '').trim()) {
+            if (!item.querySelector('.fav-new')) {
+              const newBadge = document.createElement('span');
+              newBadge.className = 'fav-new';
+              newBadge.textContent = 'NEW';
+              const left = item.querySelector('.fav-left') || item;
+              left.appendChild(newBadge);
+            }
+            break;
+          }
+        }
+      });
     } catch (err) {
       console.error('Refresh error:', err);
       alert('更新時發生錯誤，請稍後再試');
