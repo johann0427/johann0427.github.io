@@ -1,8 +1,9 @@
 // ==UserScript==
 // @name         BAKAMH Auto Pagination
 // @namespace    http://tampermonkey.net/
-// @version      1.5
+// @version      1.6
 // @description  Infinite Scroll And Auto Pagination with History Restore
+// @icon         https://icons.duckduckgo.com/ip2/bakamh.com.ico
 // @match        https://bakamh.com/manhwa/*
 // @match        https://bakamh.com/manga/*
 // @grant        none
@@ -25,11 +26,24 @@
   function saveState() {
     const container = document.querySelector("#loop-content");
     if (container) {
-      history.replaceState({
+      const state = {
         page: currentPage,
         html: container.innerHTML,
         scrollY: window.scrollY
-      }, "", window.location.href);
+      };
+      history.replaceState(state, "", window.location.href);
+    }
+  }
+
+  function pushState() {
+    const container = document.querySelector("#loop-content");
+    if (container) {
+      const state = {
+        page: currentPage,
+        html: container.innerHTML,
+        scrollY: window.scrollY
+      };
+      history.pushState(state, "", window.location.href);
     }
   }
 
@@ -80,13 +94,21 @@
       console.log(`✅ 第 ${currentPage} 頁已載入 (${items.length} 個項目)`);
 
       // 每次載入完成就存狀態
-      saveState();
+      pushState();
+
     } catch (err) {
       console.error("❌ 載入失敗:", err);
     } finally {
       loading = false;
     }
   }
+
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest("a");
+    if (a && a.href && a.origin === location.origin) {
+      saveState();
+    }
+  });
 
   function scrollHandler() {
     if ((window.innerHeight + window.scrollY) >= (document.body.offsetHeight - threshold)) {
